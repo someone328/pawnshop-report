@@ -1,0 +1,174 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "API",
+    "description" : "Модуль отчетов для сети ломбардов",
+    "contact" : {
+      "name" : "Denis Ryleev",
+      "email" : "ryleew@yandex.ru"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost/{basePath}",
+    "variables" : {
+      "basePath" : {
+        "default" : "v1"
+      }
+    }
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Metadata" ],
+        "summary" : "Get metadata from the root of the API",
+        "operationId" : "getMetadata",
+        "responses" : {
+          "200" : {
+            "description" : "Success"
+          }
+        },
+        "x-accepts" : ""
+      }
+    },
+    "/report" : {
+      "post" : {
+        "tags" : [ "report" ],
+        "summary" : "Сохранение отчета",
+        "operationId" : "saveReport",
+        "requestBody" : {
+          "content" : {
+            "appliocation/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Report"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Success"
+          }
+        },
+        "x-contentType" : "appliocation/json",
+        "x-accepts" : ""
+      }
+    },
+    "/user" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Получить всех пользователей",
+        "operationId" : "getAllUsers",
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorised"
+          },
+          "500" : {
+            "description" : "Unknown error"
+          }
+        },
+        "x-accepts" : "application/json"
+      }
+    },
+    "/user/{userId}" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Получить пользователя по Id",
+        "operationId" : "getUserById",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "Id пользователя",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                },
+                "example" : {
+                  "id" : "098F6BCD4621D373CADE4E832627B4F6",
+                  "name" : "Вася Пупкин",
+                  "login" : "9169321494",
+                  "roles" : [ "employee", "admin" ]
+                }
+              }
+            }
+          }
+        },
+        "x-accepts" : "application/json"
+      }
+    },
+    "x-apiVersion" : "v1"
+  },
+  "components" : {
+    "schemas" : {
+      "Report" : {
+        "type" : "object",
+        "description" : "Отчет по конкретному пользователю за рабочий день"
+      },
+      "User" : {
+        "required" : [ "id", "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "x-jpa" : {
+              "type" : "javax.persistence.Id"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "login" : {
+            "type" : "string",
+            "description" : "Для логина используется номер телефона в формате 10 цифр"
+          },
+          "department" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Department"
+            }
+          }
+        },
+        "description" : "Пользователь системы"
+      },
+      "Department" : {
+        "required" : [ "id", "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64",
+            "x-jpa" : {
+              "type" : "javax.persistence.Id"
+            }
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}
